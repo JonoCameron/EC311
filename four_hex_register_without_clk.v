@@ -26,9 +26,12 @@ module four_hex_register_without_clk(Out, In, clk, reset, load);
 		
 		reg 		[1:0]select;
 		reg		[15:0]Out;
-
 		
-always@(posedge load or posedge reset)
+		wire w_load;
+		
+		debouncer d0(clk, reset, load, w_load);
+		
+always@(posedge w_load or posedge reset)
 	if (reset == 1'b1)
 		begin
 			select <= 2'b0;
