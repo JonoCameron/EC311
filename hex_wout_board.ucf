@@ -1,0 +1,17 @@
+//Inputs
+NET "In[0]" LOC = T10;
+NET "In[1]" LOC = T9;
+NET "In[2]" LOC = V9;
+NET "In[3]" LOC = M8;
+NET "load" LOC = D9;
+NET "reset" LOC = A8;
+NET "clk" LOC = V10;
+//Outputs
+NET "Out[0]" LOC = U16;
+NET "Out[1]" LOC = V16;
+NET "Out[2]" LOC = U15;
+NET "Out[3]" LOC = V15;
+NET "Out[4]" LOC = M11;
+NET "Out[5]" LOC = N11;
+NET "Out[6]" LOC = R11;
+NET "Out[7]" LOC = T11;
