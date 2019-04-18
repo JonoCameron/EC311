@@ -36,14 +36,14 @@ wire w_clk;
 clk_dvdr		c0(clk, reset, w_clk);
 debouncer 	d0(w_clk, reset, load, w_load);
 
-always @(posedge load or posedge reset)
+always @(posedge w_clk or posedge reset)
 	if (reset)
 		begin
 				active_digit 	= 4'b0000;
 				seven_in 		= 4'b1000;
 				count				<= 2'b00;
 		end
-	else
+	else if (w_load)
 		begin
 		case (count)
 		0: 
