@@ -1,0 +1,21 @@
+//Inputs
+NET "user_inp[0]" LOC = T10;
+NET "user_inp[1]" LOC = T9;
+NET "user_inp[2]" LOC = V9;
+NET "user_inp[3]" LOC = M8;
+NET "load" LOC = D9;
+NET "reset" LOC = A8;
+//NET "clk" LOC = V10;
+//Outputs
+NET "seven_out[0]" LOC = L14;
+NET "seven_out[1]" LOC = N14;
+NET "seven_out[2]" LOC = M14;
+NET "seven_out[3]" LOC = U18;
+NET "seven_out[4]" LOC = U17;
+NET "seven_out[5]" LOC = T18;
+NET "seven_out[6]" LOC = T17;
+NET "active_digit[0]" LOC = N16;
+NET "active_digit[1]" LOC = N15;
+NET "active_digit[2]" LOC = P18;
+NET "active_digit[3]" LOC = P17;
+

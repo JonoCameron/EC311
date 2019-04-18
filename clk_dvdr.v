@@ -16,10 +16,10 @@ module clk_dvdr(
     );
 	 
 	 
-parameter toggle_value = 26'b10011000100101101000000000;
+parameter toggle_value = 9'b111110100;
 
 	 
-reg[25:0] cnt;
+reg[8:0] cnt;
 
 always@(posedge clk_in or posedge rst)
 begin
