@@ -36,6 +36,7 @@ module Combination_Lock(input clk,
  reg [5:0] next_state;	
  reg clk;
  reg [3:0] seven_in;
+ reg [6:0] seven_out_temp;
  output reg [3:0] active_digit;
  output [6:0] seven_out;
 
@@ -55,7 +56,10 @@ parameter GetThirdDigit_change	= 6'b001011;
 parameter GetFourthDigit_change	= 6'b001100;
 parameter UNLOCK_MODE				= 6'b001101;
 parameter CHANGE_PASSWORD_MODE	= 6'b001110;
-//parameter BACKDOOR					= 6'b001111; 
+parameter CHECK_STATE_L2U			= 6'b001111; //check password matches going from locked to unlocked mode
+parameter CHECK_STATE_U2L			= 6'b010000; //check password matches going from unlocked to locked mode
+//parameter BACKDOOR					= 6'b00????; 
+
   
  //get_second_input state
 // parameters for output, you will need more obviously
@@ -79,11 +83,11 @@ c0 clk_dvdr(clk, rst, clk);
 		// your code goes here
 		if (rst==1)
 		begin
-			current_state<= IDLE;
-			assign password[15:0]=16'b0000000000000000;
+			current_state <= IDLE;
+			assign password[15:0] = 16'b0000000000000000;
 		end
 		else
-			current_state<= next_state;
+			current_state <= next_state;
 		
 	end
 
@@ -95,7 +99,7 @@ c0 clk_dvdr(clk, rst, clk);
 	begin
 		if (current_state == IDLE)
 		begin
-//			assign password[15:0]=16'b0000000000000000; DONT THINK THIS SHOULD BE HERE
+//			assign password[15:0] = 16'b0000000000000000; DONT THINK THIS SHOULD BE HERE
 			
 			if (ent == 1)
 				next_state = GetFirstDigit_lock;
@@ -123,7 +127,13 @@ c0 clk_dvdr(clk, rst, clk);
 				next_state = current_state;
 		
 		else if ( current_state == GetFourthDigit_lock )
-			if (ent == 1 && inpassword == password)  // POTENTIAL FAILURE POINT AT "inpassword == password" PERHAPS CONDITION NEEDS MOVING ELSEWHERE
+			if (ent == 1 )//&& inpassword == password)  // POTENTIAL FAILURE POINT AT "inpassword == password" PERHAPS CONDITION NEEDS MOVING ELSEWHERE
+				next_state = CHECK_STATE_L2U;
+			else
+				next_state = current_state;
+				
+		else if ( current_state == CHECK_STATE_L2U )
+			if ( password == inpassword )
 				next_state = UNLOCK_MODE;
 			else
 				next_state = IDLE;
@@ -183,10 +193,16 @@ c0 clk_dvdr(clk, rst, clk);
 				next_state = current_state;
 		
 		else if ( current_state == GetFourthDigit_unlock )
-			if (ent == 1)
-				next_state = IDLE;
+			if (ent == 1 )//&& inpassword == password)  // POTENTIAL FAILURE POINT AT "inpassword == password" PERHAPS CONDITION NEEDS MOVING ELSEWHERE
+				next_state = CHECK_STATE_U2L;
 			else
 				next_state = current_state;
+			
+		else if ( current_state == CHECK_STATE_U2L )
+			if ( password == inpassword )
+				next_state = IDLE;
+			else
+				next_state = UNLOCK_MODE;
 				
 	end
 		/*
@@ -219,7 +235,7 @@ c0 clk_dvdr(clk, rst, clk);
 		else 
 			if( current_state == IDLE )
 			begin
-			 	password[15:0] <= 16'b0000000000000000; // Built in reset is 0, when user in IDLE state.
+//			 	password[15:0] <= 16'b0000000000000000; // Built in reset is 0, when user in IDLE state.
 				 // you may need to add extra things here.
 			end
 		
@@ -331,6 +347,9 @@ c0 clk_dvdr(clk, rst, clk);
 		
 	end
 
-
+binartosegment(ssd[19:15
+active digit 4'b0111
+assign sevenout = sevenouttemp;
 endmodule
+
 */
