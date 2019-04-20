@@ -55,7 +55,7 @@ parameter GetThirdDigit_change	= 6'b001011;
 parameter GetFourthDigit_change	= 6'b001100;
 parameter UNLOCK_MODE				= 6'b001101;
 parameter CHANGE_PASSWORD_MODE	= 6'b001110;
-parameter BACKDOOR					= 6'b001111; 
+//parameter BACKDOOR					= 6'b001111; 
   
  //get_second_input state
 // parameters for output, you will need more obviously
@@ -65,7 +65,7 @@ parameter S=5'b00101;// same for L and for other guys, each of them 5 bit. IN ss
 parameter d=5'b10001;
 parameter O=5'b00000;
 parameter P=5'b10010;
-parameter E=5'b01110;
+parameter E=5'b01110; 
 parameter n=5'b10011;
 parameter DASH=5'b10100; 
 parameter BLANK=5'b10101;
@@ -77,47 +77,118 @@ c0 clk_dvdr(clk, rst, clk);
 	always @ (posedge clk or posedge rst)
 	begin
 		// your code goes here
-		if(rst==1)
-		current_state<= IDLE;
-		
+		if (rst==1)
+		begin
+			current_state<= IDLE;
+			assign password[15:0]=16'b0000000000000000;
+		end
 		else
-		current_state<= next_state;
+			current_state<= next_state;
 		
 	end
 
 	
-active_digit 	= 4'b0111;
-seven_in 		= 5'b00000;
-binaryToSegment a1(seven_in, seven_out_temp);
-assign seven_out = seven_out_temp;
-
-/*active_digit 	= 4'b1011;
-seven_in 		= 5'b10010;
-active_digit 	= 4'b1101;
-seven_in 		= 4'b01110;
-active_digit 	= 4'b1110;
-seven_in 		= 4'b10011;
 
 
-/*	// combinational part - next state definitions
+	// combinational part - next state definitions
 	always @ (*)
 	begin
-		if(current_state == IDLE)
+		if (current_state == IDLE)
 		begin
-			assign password[15:0]=16'b0000000000000000;
+//			assign password[15:0]=16'b0000000000000000; DONT THINK THIS SHOULD BE HERE
 			
-			if(ent == 1)
-				next_state = GETFIRSTDIGIT;
+			if (ent == 1)
+				next_state = GetFirstDigit_lock;
 			else 
 				next_state = current_state;
 			
 		end
 
-		else if ( current_state == GETFIRSTDIGIT )
-			 if (ent == 1)
-			 	next_state = GETSECONDIGIT;
-			 else
+		else if ( current_state == GetFirstDigit_lock )
+			if (ent == 1)
+			 	next_state = GetSecondDigit_lock;
+			else
 			 	next_state = current_state;
+				
+		else if ( current_state == GetSecondDigit_lock )
+			if (ent == 1)
+				next_state = GetThirdDigit_lock;
+			else
+				next_state = current_state;
+		
+		else if ( current_state == GetThirdDigit_lock )
+			if (ent == 1)
+				next_state = GetFourthDigit_lock;
+			else
+				next_state = current_state;
+		
+		else if ( current_state == GetFourthDigit_lock )
+			if (ent == 1 && inpassword == password)  // POTENTIAL FAILURE POINT AT "inpassword == password" PERHAPS CONDITION NEEDS MOVING ELSEWHERE
+				next_state = UNLOCK_MODE;
+			else
+				next_state = IDLE;
+				
+		else if ( current_state == UNLOCK_MODE )
+			if (change == 1)
+				next_state = GetFirstDigit_change;
+			else
+				next_state = current_state;
+				
+		else if ( current_state == GetFirstDigit_change )
+			if (ent == 1)
+				next_state = GetSecondDigit_change;
+			else
+				next_state = current_state;
+				
+		else if ( current_state == GetSecondDigit_change )
+			if (ent == 1)
+				next_state = GetThirdDigit_change;
+			else
+				next_state = current_state;
+				
+		else if ( current_state == GetThirdDigit_change )
+			if (ent == 1)
+				next_state = GetFourthDigit_change;
+			else
+				next_state = current_state;
+				
+		else if ( current_state == GetFourthDigit_change )
+			if (ent == 1)
+				next_state = UNLOCK_MODE;
+			else
+				next_state = current_state;
+			
+		else if ( current_state == UNLOCK_MODE )
+			if (ent == 1)
+				next_state = GetFirstDigit_unlock;
+			else
+				next_state = current_state;
+		
+		else if ( current_state == GetFirstDigit_unlock )
+			if (ent == 1)
+				next_state = GetSecondDigit_unlock;
+			else
+				next_state = current_state;
+				
+		else if ( current_state == GetSecondDigit_unlock )
+			if (ent == 1)
+				next_state = GetThirdDigit_unlock;
+			else 
+				next_state = current_state;
+		
+		else if ( current_state == GetThirdDigit_unlock )
+			if (ent == 1)
+				next_state = GetFourthDigit_unlock;
+			else
+				next_state = current_state;
+		
+		else if ( current_state == GetFourthDigit_unlock )
+			if (ent == 1)
+				next_state = IDLE;
+			else
+				next_state = current_state;
+				
+	end
 		/*
 		you have to complete the rest, in this combinational part, DO NOT ASSIGN VALUES TO OUTPUTS DO NOT ASSIGN VALUES TO REGISTERS
 		just determine the next_state, that is all. password = 0000 -> this should not be there for instance or LED = 1010 this should not be there as well
@@ -134,39 +205,96 @@ seven_in 		= 4'b10011;
 
 	end
 
-
+*/
 
 	 //Sequential part for control registers, this part is responsible from assigning control registers or stored values
 	always @ (posedge clk or posedge rst)
 	begin
-		if(rst)
+		if (rst)
 		begin
 			inpassword[15:0]<=0; // password which is taken coming from user, 
 			password[15:0]<=0;
 		end
 
 		else 
-			if(current_state == IDLE)
+			if( current_state == IDLE )
 			begin
 			 	password[15:0] <= 16'b0000000000000000; // Built in reset is 0, when user in IDLE state.
 				 // you may need to add extra things here.
 			end
 		
-			else if(current_state == GETFIRSTDIGIT)
+			else if ( current_state == GetFirstDigit_lock )
 			begin
-				if(ent==1)
-					inpassword[15:12]<=sw[3:0]; // inpassword is the password entered by user, first 4 digin will be equal to current switch values
+				if(ent == 1)
+					inpassword[15:12] <= sw[3:0]; // inpassword is the password entered by user, first 4 digin will be equal to current switch values
 			end
 
-			else if (current_state == GETSECONDIGIT)
+			else if ( current_state == GetSecondDigit_lock )
 			begin
+				if (ent == 1)
+					inpassword[11:8] <= sw[3:0]; // inpassword is the password entered by user, second 4 digit will be equal to current switch values
+			end
 
-				if(ent==1)
-					inpassword[11:8]<=sw[3:0]; // inpassword is the password entered by user, second 4 digit will be equal to current switch values
+			else if ( current_state == GetThirdDigit_lock )
+			begin
+				if (ent == 1)
+					inpassword[7:4] <= sw[3:0];
+			end
+			
+			else if ( current_state == GetFourthDigit_lock )
+			begin
+				if (ent == 1)
+					inpassword[3:0] <= sw[3:0];
+			end
 				
+			else if ( current_state == GetFirstDigit_change )
+			begin
+				if (ent == 1)
+					password[15:12] <= sw[3:0];
 			end
-
-
+			
+			else if ( current_state == GetSecondDigit_change )
+			begin 
+				if (ent == 1)
+					password[11:8] <= sw[3:0];
+			end
+			
+			else if ( current_state == GetThirdDigit_change )
+			begin
+				if (ent == 1)
+					password[7:4] <= sw[3:0];
+			end
+			
+			else if ( current_state == GetFourthDigit_change )
+			begin
+				if (ent == 1)
+					password[3:0] <= sw[3:0];
+			end
+			
+			else if ( current_state == GetFirstDigit_unlock )
+			begin
+				if (ent == 1)
+					inpassword[15:12] <= sw[3:0];
+			end
+				
+			else if ( current_state == GetSecondDigit_unlock )
+			begin
+				if (ent == 1)
+					inpassword[11:8] <= sw[3:0];
+			end
+			
+			else if (current_state == GetThirdDigit_unlock )
+			begin
+				if (ent == 1)
+					inpassword[7:4] <= sw[3:0];
+			end
+			
+			else if ( current_state == GetFourthDigit_unlock )
+			begin
+				if (ent == 1 )
+					inpassword[3:0] <= sw[3:0];
+			end
+			
 		/*
 
 		Complete the rest of ASM chart, in this section, you are supposed to set the values for control registers, stored registers(password for instance)
